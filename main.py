@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 from openpyxl import Workbook, load_workbook
 
 
@@ -24,4 +25,14 @@ num_columnas_res = df.shape[1]
 
 print("Excel de entrada:", num_filas, num_columnas)
 print("Excel de salida:", num_filas_res,num_columnas_res)
+
+def candidate_cell(name):
+    pass
+
+for path in os.listdir("/tmp"):
+    if "InformesLBID" in path:
+        df = pd.read_excel(path)
+        row_num = df.shape[0]
+        cell = candidate_cell(path)
+
 
