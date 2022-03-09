@@ -1,8 +1,37 @@
+import datetime
+
 import pandas as pd
 import os
 from openpyxl import Workbook, load_workbook
 
 
+
+wb = load_workbook('Libro1.xlsx')
+ws = wb['Hoja1']
+df = pd.read_excel('Libro1.xlsx', 'Hoja1')
+num_filas = df.shape[0]
+print(str(datetime.datetime.now())[0:7])
+# Sacamos la línea que corresponde al mes
+for row in range(1, num_filas):
+    if str(ws.cell(row, 1).value)[0:7] == '2022-05': #str(datetime.datetime.now())[0:7]:
+        print(row)
+        print(ws.cell(row, 1))
+        for path in os.listdir("C://Users//j.lamparero//PycharmProjects//InformasJaime"):
+            if "InformesLBID" in path:
+                print(path)
+                cell = path[13:14] + str(row)
+                df = pd.read_excel(path)
+                row_num = df.shape[0]
+                ws[cell] = row_num
+                #os.remove('/tmp/' + path)
+        wb.save('Libro2.xlsx')
+        break
+
+
+#print("Excel de salida:", df)
+
+
+'''
 def calc_percentage(new_cell, old_cell):
     percentage = ((new_cell - old_cell)/old_cell)*100
 
@@ -10,7 +39,7 @@ def create_percentage_table():
     pass
 
 
-df = pd.read_excel('cmdb_ci_db_instance.xlsx')
+df = pd.read_excel('InformesLBID_B_cmdb_ci_db_instance.xlsx')
 num_filas = df.shape[0]
 num_columnas = df.shape[1]
 
@@ -34,5 +63,6 @@ for path in os.listdir("/tmp"):
         df = pd.read_excel(path)
         row_num = df.shape[0]
         cell = candidate_cell(path)
+'''
 
 
