@@ -1,68 +1,38 @@
 import datetime
-
 import pandas as pd
 import os
-from openpyxl import Workbook, load_workbook
+import argparse
+from openpyxl import load_workbook
+
+parser = argparse.ArgumentParser(description="Cuenta tickets serviceNow")
+parser.add_argument("-p", "--path", dest="path", type=str, help="Ruta de descarga", required=True, metavar="")
 
 
+def rellenarExcel(dest):
+    wb = load_workbook('Libro1.xlsx')
+    ws = wb['Hoja1']
+    df = pd.read_excel('Libro1.xlsx', 'Hoja1')
+    num_filas = df.shape[0]
+    for row in range(1, num_filas):
+        if str(ws.cell(row, 1).value)[0:7] == str(datetime.datetime.now())[0:7]:
+            for path in os.listdir(dest):
+                if "InformesLBID" in path:
+                    df = pd.read_excel(path)
+                    row_num = df.shape[0]
+                    if path[13:14] == '+':
+                        cell = path[14:15] + str(row)
+                        if ws[cell].value == None:
+                            num = row_num
+                        else:
+                            num = ws[cell].value + row_num
+                        ws[cell] = num
+                    else:
+                        cell = path[13:14] + str(row)
+                        ws[cell] = row_num
+                    os.remove(dest + '/' + path)
+            wb.save('Libro1.xlsx')
+            break
 
-wb = load_workbook('Libro1.xlsx')
-ws = wb['Hoja1']
-df = pd.read_excel('Libro1.xlsx', 'Hoja1')
-num_filas = df.shape[0]
-print(str(datetime.datetime.now())[0:7])
-# Sacamos la línea que corresponde al mes
-for row in range(1, num_filas):
-    if str(ws.cell(row, 1).value)[0:7] == '2022-05': #str(datetime.datetime.now())[0:7]:
-        print(row)
-        print(ws.cell(row, 1))
-        for path in os.listdir("C://Users//j.lamparero//PycharmProjects//InformasJaime"):
-            if "InformesLBID" in path:
-                print(path)
-                cell = path[13:14] + str(row)
-                df = pd.read_excel(path)
-                row_num = df.shape[0]
-                ws[cell] = row_num
-                #os.remove('/tmp/' + path)
-        wb.save('Libro2.xlsx')
-        break
-
-
-#print("Excel de salida:", df)
-
-
-'''
-def calc_percentage(new_cell, old_cell):
-    percentage = ((new_cell - old_cell)/old_cell)*100
-
-def create_percentage_table():
-    pass
-
-
-df = pd.read_excel('InformesLBID_B_cmdb_ci_db_instance.xlsx')
-num_filas = df.shape[0]
-num_columnas = df.shape[1]
-
-wb = load_workbook('Libro1.xlsx')
-ws = wb.active
-ws['B3'] = num_filas
-wb.save('Libro2.xlsx')
-df = pd.read_excel('Libro2.xlsx')
-num_filas_res = df.shape[0]
-num_columnas_res = df.shape[1]
-#for i in range(num_filas_res):
-
-print("Excel de entrada:", num_filas, num_columnas)
-print("Excel de salida:", num_filas_res,num_columnas_res)
-
-def candidate_cell(name):
-    pass
-
-for path in os.listdir("/tmp"):
-    if "InformesLBID" in path:
-        df = pd.read_excel(path)
-        row_num = df.shape[0]
-        cell = candidate_cell(path)
-'''
-
-
+if __name__ == "__main__":
+    args = parser.parse_args()
+    rellenarExcel(args.path)
